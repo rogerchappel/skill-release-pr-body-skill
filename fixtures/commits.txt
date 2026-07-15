@@ -1,0 +1,5 @@
+a1b2c3d Scaffold PR body CLI
+b2c3d4e Build grounded PR body model
+c3d4e5f Add fixture-backed parser tests
+d4e5f6a Document skill workflow
+e5f6a7b Record release candidate verification

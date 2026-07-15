@@ -1,0 +1,2 @@
+Reviewer should confirm generated wording matches the final diff.
+No external writes are performed by this tool.
