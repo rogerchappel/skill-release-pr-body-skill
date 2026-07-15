@@ -11,6 +11,7 @@ Readiness score: 72/100
 ## Verification
 
 - PASS: npm test
+- PASS: npm run smoke
 
 ## Documentation
 
@@ -22,7 +23,7 @@ Readiness score: 72/100
 `);
 
   assert.equal(dossier.classification, "incubate");
-  assert.deepEqual(dossier.verification, ["PASS: npm test"]);
+  assert.deepEqual(dossier.verification, ["PASS: npm test", "PASS: npm run smoke"]);
   assert.deepEqual(dossier.warnings, ["WARN: docs need review"]);
 });
 

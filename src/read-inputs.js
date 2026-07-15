@@ -46,7 +46,7 @@ function matchLine(text, pattern) {
 }
 
 function collectBullets(markdown, heading) {
-  const pattern = new RegExp(`^## ${escapeRegExp(heading)}\\n\\n([\\s\\S]*?)(?=\\n## |$)`, "m");
+  const pattern = new RegExp(`(?:^|\\n)## ${escapeRegExp(heading)}\\n\\n([\\s\\S]*?)(?=\\n## |\\s*$)`);
   const section = markdown.match(pattern)?.[1] ?? "";
   return section
     .split(/\r?\n/)
