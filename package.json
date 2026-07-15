@@ -1,0 +1,31 @@
+{
+  "name": "skill-release-pr-body-skill",
+  "version": "0.1.0",
+  "description": "Local-first agent skill for generating grounded release-candidate PR bodies.",
+  "type": "module",
+  "bin": {
+    "skill-release-pr-body": "bin/skill-release-pr-body.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.js",
+    "smoke": "node bin/skill-release-pr-body.js --dossier fixtures/dossier.md --commits fixtures/commits.txt --json"
+  },
+  "keywords": [
+    "agent-skill",
+    "release-candidate",
+    "pull-request",
+    "local-first"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "SKILL.md",
+    "README.md"
+  ]
+}
