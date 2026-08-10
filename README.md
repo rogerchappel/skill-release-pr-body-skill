@@ -18,6 +18,10 @@ node bin/skill-release-pr-body.js --dossier fixtures/dossier.md --commits fixtur
 skill-release-pr-body --dossier <file> [--commits <file>] [--risks <file>] [--out <file>] [--json]
 ```
 
+`--dossier` is required. Each file option must be followed by a path; missing
+values, flag-like values, and unknown arguments print a usage diagnostic and
+exit nonzero. `--help` and `-h` print usage and exit successfully.
+
 ## Output Sections
 
 - Summary
