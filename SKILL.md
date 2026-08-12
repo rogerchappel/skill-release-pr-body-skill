@@ -34,4 +34,8 @@ node bin/skill-release-pr-body.js --dossier release-dossier.md --commits commits
 npm test
 npm run check
 npm run smoke
+npm run test:package
 ```
+
+The package test verifies the shipped file list and exercises both the smoke
+command and CLI from a fresh consumer install.
