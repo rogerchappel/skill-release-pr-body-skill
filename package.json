@@ -26,6 +26,7 @@
     "bin",
     "src",
     "docs",
+    "fixtures",
     "SKILL.md",
     "README.md"
   ]
