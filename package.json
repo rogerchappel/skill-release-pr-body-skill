@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node --test",
     "check": "node scripts/check.js",
+    "test:package": "node scripts/package-smoke.js",
     "smoke": "node bin/skill-release-pr-body.js --dossier fixtures/dossier.md --commits fixtures/commits.txt --json"
   },
   "keywords": [
