@@ -6,11 +6,23 @@ reviewable markdown body with verification and safety sections.
 
 ## Quickstart
 
+From a source checkout:
+
 ```bash
 npm install
 npm run smoke
 node bin/skill-release-pr-body.js --dossier fixtures/dossier.md --commits fixtures/commits.txt
 ```
+
+As an installed package, pass paths to your own release evidence:
+
+```bash
+npm install skill-release-pr-body-skill
+npx skill-release-pr-body --dossier release-dossier.md --commits commits.txt --out pr-body.md
+```
+
+The published package includes the example fixtures, so its self-contained
+smoke command can also be run from `node_modules/skill-release-pr-body-skill`.
 
 ## CLI
 
@@ -44,5 +56,10 @@ services.
 npm test
 npm run check
 npm run smoke
+npm run test:package
 bash scripts/validate.sh
 ```
+
+`npm run test:package` packs the module, installs the tarball in a disposable
+consumer project, runs the installed package's smoke command, and invokes its
+published executable.
