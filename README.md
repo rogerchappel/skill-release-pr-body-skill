@@ -14,15 +14,29 @@ npm run smoke
 node bin/skill-release-pr-body.js --dossier fixtures/dossier.md --commits fixtures/commits.txt
 ```
 
-As an installed package, pass paths to your own release evidence:
+The package is not currently published to the npm registry. To validate or use
+the installable artifact, pack the source checkout and install that tarball in
+a clean consumer project:
 
 ```bash
-npm install skill-release-pr-body-skill
-npx skill-release-pr-body --dossier release-dossier.md --commits commits.txt --out pr-body.md
+PACKAGE_TARBALL=$(npm pack --silent)
+PACKAGE_PATH="$(pwd)/${PACKAGE_TARBALL}"
+CONSUMER_DIR=$(mktemp -d)
+cd "${CONSUMER_DIR}"
+npm init --yes
+npm install "${PACKAGE_PATH}"
+npx skill-release-pr-body \
+  --dossier node_modules/skill-release-pr-body-skill/fixtures/dossier.md \
+  --commits node_modules/skill-release-pr-body-skill/fixtures/commits.txt \
+  --out pr-body.md
 ```
 
-The published package includes the example fixtures, so its self-contained
-smoke command can also be run from `node_modules/skill-release-pr-body-skill`.
+For real use, replace the example fixture paths with paths to your own release
+evidence. The packed artifact includes the example fixtures, so its
+self-contained smoke command can also be run from
+`node_modules/skill-release-pr-body-skill`. Packing and installing this local
+artifact validates the package contents; it does not publish the package or
+establish npm registry availability.
 
 ## CLI
 
