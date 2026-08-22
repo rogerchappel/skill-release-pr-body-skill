@@ -58,6 +58,12 @@ exit nonzero. `--help` and `-h` print usage and exit successfully.
 - Known limits and risks
 - Reviewer checklist
 
+The dossier reader recognizes `Verification`, `Documentation`, and
+`Risks And Warnings` as exact CommonMark ATX H2 headings. An optional closing
+hash sequence is accepted, and a blank line after the heading is not required.
+Heading names and level remain exact; the section ends at the next H2, while
+H3-H6 content remains inside its enclosing section.
+
 ## Safety
 
 This tool is local-first and read-only unless `--out` is supplied. It does not

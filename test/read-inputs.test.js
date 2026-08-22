@@ -32,6 +32,39 @@ Readiness score: 72/100
   });
 }
 
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`accepts CommonMark ATX dossier headings with ${name} line endings`, () => {
+    const markdown = `## Verification ###
+- PASS: npm test
+### Details
+- PASS: npm run smoke
+## Documentation ##
+- PASS: README updated
+## Risks And Warnings ###
+- no warnings
+## Other
+- PASS: must stay outside the dossier sections`;
+
+    const dossier = parseDossier(markdown.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, ["PASS: npm test", "PASS: npm run smoke"]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+    assert.deepEqual(dossier.warnings, []);
+  });
+}
+
+test("requires exact H2 dossier heading names", () => {
+  const dossier = parseDossier(`### Verification
+- wrong level
+## Verification Notes
+- wrong name
+## Documentationish
+- wrong name`);
+
+  assert.deepEqual(dossier.verification, []);
+  assert.deepEqual(dossier.docs, []);
+});
+
 test("groups commits by release body sections", () => {
   const commits = parseCommits("abc1234 Add tests\nbcd2345 Document skill\ncde3456 Implement parser");
   const groups = groupCommits(commits);

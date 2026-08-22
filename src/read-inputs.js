@@ -46,11 +46,14 @@ function matchLine(text, pattern) {
 }
 
 function collectBullets(markdown, heading) {
-  const newline = "\\r?\\n";
-  const pattern = new RegExp(`(?:^|${newline})## ${escapeRegExp(heading)}${newline}${newline}([\\s\\S]*?)(?=${newline}## |\\s*$)`);
-  const section = markdown.match(pattern)?.[1] ?? "";
-  return section
-    .split(/\r?\n/)
+  const lines = markdown.split(/\r?\n/);
+  const headingPattern = new RegExp(`^##[ \\t]+${escapeRegExp(heading)}(?:[ \\t]+#+)?[ \\t]*$`);
+  const start = lines.findIndex((line) => headingPattern.test(line));
+  if (start === -1) return [];
+
+  const end = lines.findIndex((line, index) => index > start && /^##(?:[ \\t]+|$)/.test(line));
+  return lines
+    .slice(start + 1, end === -1 ? undefined : end)
     .map((line) => line.trim())
     .filter((line) => line.startsWith("- "))
     .map((line) => line.slice(2));
