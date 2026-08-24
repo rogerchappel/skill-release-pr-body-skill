@@ -52,11 +52,53 @@ function collectBullets(markdown, heading) {
   if (start === -1) return [];
 
   const end = lines.findIndex((line, index) => index > start && /^##(?:[ \\t]+|$)/.test(line));
-  return lines
-    .slice(start + 1, end === -1 ? undefined : end)
+  return visibleLines(lines.slice(start + 1, end === -1 ? undefined : end))
     .map((line) => line.trim())
     .filter((line) => line.startsWith("- "))
     .map((line) => line.slice(2));
+}
+
+function visibleLines(lines) {
+  let fence;
+  let inComment = false;
+
+  return lines.map((line) => {
+    let visible = "";
+    let remainder = line;
+
+    while (remainder) {
+      if (inComment) {
+        const commentEnd = remainder.indexOf("-->");
+        if (commentEnd === -1) return "";
+        inComment = false;
+        remainder = remainder.slice(commentEnd + 3);
+        continue;
+      }
+
+      const commentStart = remainder.indexOf("<!--");
+      if (commentStart === -1) {
+        visible += remainder;
+        break;
+      }
+      visible += remainder.slice(0, commentStart);
+      inComment = true;
+      remainder = remainder.slice(commentStart + 4);
+    }
+
+    if (fence) {
+      const closingFence = new RegExp(`^ {0,3}${escapeRegExp(fence.marker)}{${fence.length},}[ \\t]*$`);
+      if (closingFence.test(visible)) fence = undefined;
+      return "";
+    }
+
+    const openingFence = visible.match(/^ {0,3}(`{3,}|~{3,})/);
+    if (openingFence) {
+      fence = { marker: openingFence[1][0], length: openingFence[1].length };
+      return "";
+    }
+
+    return visible;
+  });
 }
 
 function escapeRegExp(value) {
