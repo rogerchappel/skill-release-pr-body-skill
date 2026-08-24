@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { groupCommits, parseCommits, parseDossier } from "../src/read-inputs.js";
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
@@ -29,6 +30,17 @@ Readiness score: 72/100
     assert.deepEqual(dossier.verification, ["PASS: npm test", "PASS: npm run smoke"]);
     assert.deepEqual(dossier.docs, ["WARN: SKILL.md missing or thin."]);
     assert.deepEqual(dossier.warnings, ["WARN: docs need review"]);
+  });
+}
+
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`ignores non-visible dossier bullets with ${name} line endings`, async () => {
+    const fixture = await readFile(new URL("../fixtures/dossier-hidden-bullets.md", import.meta.url), "utf8");
+    const dossier = parseDossier(fixture.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, ["PASS: npm test"]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+    assert.deepEqual(dossier.warnings, ["WARN: manual review remains"]);
   });
 }
 
