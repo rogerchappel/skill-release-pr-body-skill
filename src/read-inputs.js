@@ -63,6 +63,12 @@ function visibleLines(lines) {
   let inComment = false;
 
   return lines.map((line) => {
+    if (fence) {
+      const closingFence = new RegExp(`^ {0,3}${escapeRegExp(fence.marker)}{${fence.length},}[ \\t]*$`);
+      if (closingFence.test(line)) fence = undefined;
+      return "";
+    }
+
     let visible = "";
     let remainder = line;
 
@@ -83,12 +89,6 @@ function visibleLines(lines) {
       visible += remainder.slice(0, commentStart);
       inComment = true;
       remainder = remainder.slice(commentStart + 4);
-    }
-
-    if (fence) {
-      const closingFence = new RegExp(`^ {0,3}${escapeRegExp(fence.marker)}{${fence.length},}[ \\t]*$`);
-      if (closingFence.test(visible)) fence = undefined;
-      return "";
     }
 
     const openingFence = visible.match(/^ {0,3}(`{3,}|~{3,})/);
