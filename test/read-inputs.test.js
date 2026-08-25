@@ -45,6 +45,27 @@ for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
 }
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`treats HTML comment markers inside fences as literal with ${name} line endings`, () => {
+    const markdown = `## Verification
+\`\`\`text
+<!-- literal unclosed comment marker
+\`\`\`
+- PASS: visible after backtick fence
+~~~text
+<!-- literal closed comment marker -->
+~~~
+- PASS: visible after tilde fence`;
+
+    const dossier = parseDossier(markdown.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, [
+      "PASS: visible after backtick fence",
+      "PASS: visible after tilde fence"
+    ]);
+  });
+}
+
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
   test(`accepts CommonMark ATX dossier headings with ${name} line endings`, () => {
     const markdown = `## Verification ###
 - PASS: npm test
