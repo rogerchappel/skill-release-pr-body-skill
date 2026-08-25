@@ -64,7 +64,9 @@ hash sequence is accepted, and a blank line after the heading is not required.
 Heading names and level remain exact; the section ends at the next H2, while
 H3-H6 content remains inside its enclosing section.
 Only visible bullet lines are collected as evidence. Bullets inside CommonMark
-backtick or tilde fenced code blocks and HTML comments are ignored.
+backtick or tilde fenced code blocks and HTML comments are ignored. Once a
+fence opens, its contents are treated literally until the matching closing
+fence, so HTML comment markers in code examples do not affect later evidence.
 
 ## Safety
 
