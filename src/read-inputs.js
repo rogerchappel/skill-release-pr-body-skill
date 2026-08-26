@@ -6,11 +6,13 @@ export async function readOptional(filePath) {
 }
 
 export function parseDossier(markdown) {
-  const classification = matchLine(markdown, /^Classification:\s*(.+)$/m) ?? "unknown";
-  const score = matchLine(markdown, /^Readiness score:\s*(.+)$/m) ?? "unknown";
-  const verification = collectBullets(markdown, "Verification");
-  const warnings = collectBullets(markdown, "Risks And Warnings").filter((line) => !/no warnings/i.test(line));
-  const docs = collectBullets(markdown, "Documentation");
+  const lines = visibleLines(markdown.split(/\r?\n/));
+  const visibleMarkdown = lines.join("\n");
+  const classification = matchLine(visibleMarkdown, /^Classification:\s*(.+)$/m) ?? "unknown";
+  const score = matchLine(visibleMarkdown, /^Readiness score:\s*(.+)$/m) ?? "unknown";
+  const verification = collectBullets(lines, "Verification");
+  const warnings = collectBullets(lines, "Risks And Warnings").filter((line) => !/no warnings/i.test(line));
+  const docs = collectBullets(lines, "Documentation");
 
   return { classification, score, verification, warnings, docs };
 }
@@ -45,14 +47,13 @@ function matchLine(text, pattern) {
   return text.match(pattern)?.[1]?.trim();
 }
 
-function collectBullets(markdown, heading) {
-  const lines = markdown.split(/\r?\n/);
+function collectBullets(lines, heading) {
   const headingPattern = new RegExp(`^##[ \\t]+${escapeRegExp(heading)}(?:[ \\t]+#+)?[ \\t]*$`);
   const start = lines.findIndex((line) => headingPattern.test(line));
   if (start === -1) return [];
 
   const end = lines.findIndex((line, index) => index > start && /^##(?:[ \\t]+|$)/.test(line));
-  return visibleLines(lines.slice(start + 1, end === -1 ? undefined : end))
+  return lines.slice(start + 1, end === -1 ? undefined : end)
     .map((line) => line.trim())
     .filter((line) => line.startsWith("- "))
     .map((line) => line.slice(2));
