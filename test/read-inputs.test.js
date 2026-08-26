@@ -66,6 +66,31 @@ for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
 }
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`ignores non-visible dossier scalar metadata with ${name} line endings`, () => {
+    const markdown = `<!--
+Classification: hidden-comment
+Readiness score: 1/100
+-->
+\`\`\`text
+Classification: hidden-backtick-fence
+Readiness score: 2/100
+<!-- literal unclosed comment marker
+\`\`\`
+Classification: candidate
+~~~text
+Readiness score: 3/100
+<!-- literal closed comment marker -->
+~~~
+Readiness score: 84/100`;
+
+    const dossier = parseDossier(markdown.replaceAll("\n", newline));
+
+    assert.equal(dossier.classification, "candidate");
+    assert.equal(dossier.score, "84/100");
+  });
+}
+
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
   test(`accepts CommonMark ATX dossier headings with ${name} line endings`, () => {
     const markdown = `## Verification ###
 - PASS: npm test
