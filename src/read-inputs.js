@@ -55,8 +55,8 @@ function collectBullets(lines, heading) {
   const end = lines.findIndex((line, index) => index > start && /^##(?:[ \\t]+|$)/.test(line));
   return lines.slice(start + 1, end === -1 ? undefined : end)
     .map((line) => line.trim())
-    .filter((line) => line.startsWith("- "))
-    .map((line) => line.slice(2));
+    .map((line) => line.match(/^[-*+] (.+)$/)?.[1])
+    .filter((line) => line !== undefined);
 }
 
 function visibleLines(lines) {
