@@ -4,6 +4,29 @@ import { readFile } from "node:fs/promises";
 import { groupCommits, parseCommits, parseDossier } from "../src/read-inputs.js";
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`collects mixed CommonMark bullet markers with ${name} line endings`, () => {
+    const markdown = `## Verification
+- PASS: npm test
+* PASS: npm run smoke
++ PASS: npm run check
+## Documentation
+* PASS: README updated
+## Risks And Warnings
++ WARN: manual review remains
+## Other
+- PASS: outside the exact H2 boundary`;
+
+    const dossier = parseDossier(markdown.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, [
+      "PASS: npm test",
+      "PASS: npm run smoke",
+      "PASS: npm run check"
+    ]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+    assert.deepEqual(dossier.warnings, ["WARN: manual review remains"]);
+  });
+
   test(`parses dossier sections with ${name} line endings`, () => {
     const markdown = `# X
 
