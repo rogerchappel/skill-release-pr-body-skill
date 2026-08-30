@@ -63,7 +63,8 @@ The dossier reader recognizes `Verification`, `Documentation`, and
 hash sequence is accepted, and a blank line after the heading is not required.
 Heading names and level remain exact; the section ends at the next H2, while
 H3-H6 content remains inside its enclosing section.
-Only visible metadata and bullet lines are collected as evidence.
+Only visible metadata and unordered bullet lines using `-`, `*`, or `+` are
+collected as evidence.
 `Classification` and `Readiness score` lines, as well as bullets, are ignored
 inside CommonMark backtick or tilde fenced code blocks and HTML comments. Once
 a fence opens, its contents are treated literally until the matching closing
