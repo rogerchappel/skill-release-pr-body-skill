@@ -4,6 +4,19 @@ import { readFile } from "node:fs/promises";
 import { groupCommits, parseCommits, parseDossier } from "../src/read-inputs.js";
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`accepts indented CommonMark headings and bullet whitespace with ${name} line endings`, async () => {
+    const fixture = await readFile(new URL("../fixtures/dossier-commonmark.md", import.meta.url), "utf8");
+    const dossier = parseDossier(fixture.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, [
+      "PASS: npm test",
+      "PASS: npm run smoke",
+      "PASS: npm run check"
+    ]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+    assert.deepEqual(dossier.warnings, ["WARN: manual review remains"]);
+  });
+
   test(`collects mixed CommonMark bullet markers with ${name} line endings`, () => {
     const markdown = `## Verification
 - PASS: npm test
@@ -141,6 +154,22 @@ test("requires exact H2 dossier heading names", () => {
 - wrong name
 ## Documentationish
 - wrong name`);
+
+  assert.deepEqual(dossier.verification, []);
+  assert.deepEqual(dossier.docs, []);
+});
+
+test("ignores non-CommonMark headings and unordered bullet markers", () => {
+  const dossier = parseDossier(`    ## Verification
+- hidden under a four-space-indented heading
+## Verification Notes
+- wrong name
+## Verification
+-no marker whitespace
+    - four-space-indented bullet
+1. ordered bullet
+## Documentationish
++ wrong section`);
 
   assert.deepEqual(dossier.verification, []);
   assert.deepEqual(dossier.docs, []);
