@@ -48,14 +48,13 @@ function matchLine(text, pattern) {
 }
 
 function collectBullets(lines, heading) {
-  const headingPattern = new RegExp(`^##[ \\t]+${escapeRegExp(heading)}(?:[ \\t]+#+)?[ \\t]*$`);
+  const headingPattern = new RegExp(`^ {0,3}##[ \\t]+${escapeRegExp(heading)}(?:[ \\t]+#+)?[ \\t]*$`);
   const start = lines.findIndex((line) => headingPattern.test(line));
   if (start === -1) return [];
 
-  const end = lines.findIndex((line, index) => index > start && /^##(?:[ \\t]+|$)/.test(line));
+  const end = lines.findIndex((line, index) => index > start && /^ {0,3}##(?:[ \t]+|$)/.test(line));
   return lines.slice(start + 1, end === -1 ? undefined : end)
-    .map((line) => line.trim())
-    .map((line) => line.match(/^[-*+] (.+)$/)?.[1])
+    .map((line) => line.match(/^ {0,3}[-*+][ \t]+(.+)$/)?.[1]?.trim())
     .filter((line) => line !== undefined);
 }
 
