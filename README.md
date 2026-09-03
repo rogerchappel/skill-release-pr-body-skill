@@ -67,8 +67,11 @@ H3-H6 content remains inside its enclosing section.
 Only visible metadata and unordered bullet lines using `-`, `*`, or `+` are
 collected as evidence. Bullets may use zero to three leading spaces and one or
 more spaces or a tab after the marker.
-`Classification` and `Readiness score` lines, as well as bullets, are ignored
-inside CommonMark backtick or tilde fenced code blocks and HTML comments. Once
+`Classification` and `Readiness score` lines, headings, and bullets are ignored
+inside CommonMark backtick or tilde fenced code blocks, HTML comments, and raw
+HTML blocks. Raw containers such as `<div>` may therefore contain illustrative
+`Classification: ship` or `## Verification` text without turning it into
+release evidence; parsing resumes after the block's CommonMark boundary. Once
 a fence opens, its contents are treated literally until the matching closing
 fence, so HTML comment markers in code examples do not affect later evidence.
 
