@@ -127,6 +127,18 @@ Readiness score: 84/100`;
 }
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`ignores dossier evidence inside CommonMark HTML blocks with ${name} line endings`, async () => {
+    const fixture = await readFile(new URL("../fixtures/dossier-html-blocks.md", import.meta.url), "utf8");
+    const dossier = parseDossier(fixture.replaceAll("\n", newline));
+
+    assert.equal(dossier.classification, "candidate");
+    assert.equal(dossier.score, "86/100");
+    assert.deepEqual(dossier.verification, ["PASS: npm test"]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+  });
+}
+
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
   test(`accepts CommonMark ATX dossier headings with ${name} line endings`, () => {
     const markdown = `## Verification ###
 - PASS: npm test
