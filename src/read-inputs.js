@@ -61,11 +61,21 @@ function collectBullets(lines, heading) {
 function visibleLines(lines) {
   let fence;
   let inComment = false;
+  let htmlBlock;
 
   return lines.map((line) => {
     if (fence) {
       const closingFence = new RegExp(`^ {0,3}${escapeRegExp(fence.marker)}{${fence.length},}[ \\t]*$`);
       if (closingFence.test(line)) fence = undefined;
+      return "";
+    }
+
+    if (htmlBlock) {
+      if (htmlBlock.end === "blank") {
+        if (line.trim() === "") htmlBlock = undefined;
+      } else if (htmlBlock.end.test(line)) {
+        htmlBlock = undefined;
+      }
       return "";
     }
 
@@ -97,8 +107,38 @@ function visibleLines(lines) {
       return "";
     }
 
+    const openingHtmlBlock = matchHtmlBlockStart(visible);
+    if (openingHtmlBlock) {
+      if (openingHtmlBlock.end === "blank" || !openingHtmlBlock.end.test(visible)) {
+        htmlBlock = openingHtmlBlock;
+      }
+      return "";
+    }
+
     return visible;
   });
+}
+
+const BLOCK_TAGS = [
+  "address", "article", "aside", "base", "basefont", "blockquote", "body", "caption", "center",
+  "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt", "fieldset",
+  "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4",
+  "h5", "h6", "head", "header", "hr", "html", "iframe", "legend", "li", "link", "main",
+  "menu", "menuitem", "nav", "noframes", "ol", "optgroup", "option", "p", "param", "search",
+  "section", "summary", "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track",
+  "ul"
+];
+const BLOCK_TAG_PATTERN = new RegExp(`^ {0,3}</?(?:${BLOCK_TAGS.join("|")})(?:[ \\t]+|/?>|$)`, "i");
+const COMPLETE_TAG_PATTERN = /^ {0,3}<\/?[A-Za-z][A-Za-z0-9-]*(?:[ \t]+[^<>]*)?\/?>[ \t]*$/;
+
+function matchHtmlBlockStart(line) {
+  const rawTag = line.match(/^ {0,3}<(script|pre|style|textarea)(?:[ \t]+|>|$)/i);
+  if (rawTag) return { end: new RegExp(`</${rawTag[1]}[ \\t]*>`, "i") };
+  if (/^ {0,3}<\?/.test(line)) return { end: /\?>/ };
+  if (/^ {0,3}<![A-Z]/.test(line)) return { end: />/ };
+  if (/^ {0,3}<!\[CDATA\[/.test(line)) return { end: /\]\]>/ };
+  if (BLOCK_TAG_PATTERN.test(line) || COMPLETE_TAG_PATTERN.test(line)) return { end: "blank" };
+  return undefined;
 }
 
 function escapeRegExp(value) {
