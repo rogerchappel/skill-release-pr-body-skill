@@ -115,6 +115,21 @@ for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
 }
 
 for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
+  test(`preserves HTML comment markers inside inline code spans with ${name} line endings`, async () => {
+    const fixture = await readFile(new URL("../fixtures/dossier-inline-code.md", import.meta.url), "utf8");
+    const dossier = parseDossier(fixture.replaceAll("\n", newline));
+
+    assert.equal(dossier.classification, "candidate `<!-- hidden marker -->`");
+    assert.equal(dossier.score, "82/100");
+    assert.deepEqual(dossier.verification, [
+      "PASS: npm test `<!-- keep marker -->`",
+      "PASS: npm run smoke with ``<!-- keep marker too -->`` span"
+    ]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+  });
+}
+
+for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
   test(`treats HTML comment markers inside fences as literal with ${name} line endings`, () => {
     const markdown = `## Verification
 \`\`\`text
