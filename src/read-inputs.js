@@ -52,10 +52,25 @@ function collectBullets(lines, heading) {
   const start = lines.findIndex((line) => headingPattern.test(line));
   if (start === -1) return [];
 
-  const end = lines.findIndex((line, index) => index > start && /^ {0,3}##(?:[ \t]+|$)/.test(line));
+  const end = lines.findIndex((line, index) => index > start && isSectionBoundary(lines, index));
   return lines.slice(start + 1, end === -1 ? undefined : end)
     .map((line) => line.match(/^ {0,3}[-*+][ \t]+(.+)$/)?.[1]?.trim())
     .filter((line) => line !== undefined);
+}
+
+function isSectionBoundary(lines, index) {
+  if (/^ {0,3}##(?:[ \t]+|$)/.test(lines[index])) return true;
+  return isSetextHeadingUnderline(lines, index);
+}
+
+function isSetextHeadingUnderline(lines, index) {
+  if (!/^ {0,3}-+[ \t]*$/.test(lines[index])) return false;
+  if (index === 0) return false;
+  const previous = lines[index - 1];
+  if (previous.trim() === "") return false;
+  if (/^ {0,3}#{1,6}(?:[ \t]+|$)/.test(previous)) return false;
+  if (/^ {0,3}[-*+][ \t]/.test(previous)) return false;
+  return !/^ {0,3}-+[ \t]*$/.test(previous);
 }
 
 function visibleLines(lines) {
@@ -91,7 +106,16 @@ function visibleLines(lines) {
         continue;
       }
 
+      const codeSpan = findCodeSpan(remainder);
       const commentStart = remainder.indexOf("<!--");
+
+      if (codeSpan && (commentStart === -1 || codeSpan.start < commentStart)) {
+        visible += remainder.slice(0, codeSpan.start);
+        visible += remainder.slice(codeSpan.start, codeSpan.end);
+        remainder = remainder.slice(codeSpan.end);
+        continue;
+      }
+
       if (commentStart === -1) {
         visible += remainder;
         break;
@@ -117,6 +141,16 @@ function visibleLines(lines) {
 
     return visible;
   });
+}
+
+function findCodeSpan(text) {
+  const opening = text.match(/`+/);
+  if (!opening) return undefined;
+  const start = opening.index;
+  const marker = opening[0];
+  const closing = text.indexOf(marker, start + marker.length);
+  if (closing === -1) return undefined;
+  return { start, end: closing + marker.length };
 }
 
 const BLOCK_TAGS = [
