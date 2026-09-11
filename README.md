@@ -62,8 +62,11 @@ The dossier reader recognizes `Verification`, `Documentation`, and
 `Risks And Warnings` as exact CommonMark ATX H2 headings. An optional closing
 hash sequence is accepted, and a blank line after the heading is not required.
 Headings may use zero to three leading spaces. Heading names and level remain
-exact; the section ends at the next H2, while
-H3-H6 content remains inside its enclosing section.
+exact; the section ends at the next H2 heading, whether CommonMark ATX (`##`)
+or setext (a paragraph line underlined with `---`), while
+H3-H6 content, setext H1 underlines (`===`), and setext-style underline
+patterns after bullets or blank lines (thematic breaks) remain inside its
+enclosing section.
 Only visible metadata and unordered bullet lines using `-`, `*`, or `+` are
 collected as evidence. Bullets may use zero to three leading spaces and one or
 more spaces or a tab after the marker.
@@ -74,6 +77,9 @@ HTML blocks. Raw containers such as `<div>` may therefore contain illustrative
 release evidence; parsing resumes after the block's CommonMark boundary. Once
 a fence opens, its contents are treated literally until the matching closing
 fence, so HTML comment markers in code examples do not affect later evidence.
+HTML comment markers inside CommonMark inline code spans (one or more
+backticks) are also treated as literal text: they are preserved verbatim in
+collected bullet and metadata evidence and never open a comment.
 
 ## Safety
 
