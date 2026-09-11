@@ -17,6 +17,40 @@ for (const [name, newline] of [["LF", "\n"], ["CRLF", "\r\n"]]) {
     assert.deepEqual(dossier.warnings, ["WARN: manual review remains"]);
   });
 
+  test(`ends dossier sections at CommonMark setext H2 headings with ${name} line endings`, () => {
+    const markdown = `## Verification
+
+- PASS: npm test
+
+Next Section
+---
+
+- PASS: npm run smoke
+
+## Documentation
+
+- PASS: README updated`;
+
+    const dossier = parseDossier(markdown.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, ["PASS: npm test"]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+  });
+
+  test(`treats setext-style underline after a bullet as a thematic break with ${name} line endings`, () => {
+    const markdown = `## Verification
+- PASS: npm test
+---
+- PASS: npm run smoke
+## Documentation
+- PASS: README updated`;
+
+    const dossier = parseDossier(markdown.replaceAll("\n", newline));
+
+    assert.deepEqual(dossier.verification, ["PASS: npm test", "PASS: npm run smoke"]);
+    assert.deepEqual(dossier.docs, ["PASS: README updated"]);
+  });
+
   test(`collects mixed CommonMark bullet markers with ${name} line endings`, () => {
     const markdown = `## Verification
 - PASS: npm test
