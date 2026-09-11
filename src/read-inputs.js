@@ -106,7 +106,16 @@ function visibleLines(lines) {
         continue;
       }
 
+      const codeSpan = findCodeSpan(remainder);
       const commentStart = remainder.indexOf("<!--");
+
+      if (codeSpan && (commentStart === -1 || codeSpan.start < commentStart)) {
+        visible += remainder.slice(0, codeSpan.start);
+        visible += remainder.slice(codeSpan.start, codeSpan.end);
+        remainder = remainder.slice(codeSpan.end);
+        continue;
+      }
+
       if (commentStart === -1) {
         visible += remainder;
         break;
@@ -132,6 +141,16 @@ function visibleLines(lines) {
 
     return visible;
   });
+}
+
+function findCodeSpan(text) {
+  const opening = text.match(/`+/);
+  if (!opening) return undefined;
+  const start = opening.index;
+  const marker = opening[0];
+  const closing = text.indexOf(marker, start + marker.length);
+  if (closing === -1) return undefined;
+  return { start, end: closing + marker.length };
 }
 
 const BLOCK_TAGS = [
