@@ -23,6 +23,7 @@ try {
     "fixtures/commits.txt",
     "fixtures/dossier.md",
     "package.json",
+    "LICENSE",
     "README.md",
     "SKILL.md",
   ]) {

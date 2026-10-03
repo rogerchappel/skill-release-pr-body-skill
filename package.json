@@ -23,6 +23,7 @@
     "node": ">=20"
   },
   "files": [
+    "LICENSE",
     "bin",
     "src",
     "docs",
