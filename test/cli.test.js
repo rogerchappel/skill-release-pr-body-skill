@@ -58,6 +58,19 @@ test("unknown arguments report an error", () => {
   assert.match(result.stderr, /Usage:/);
 });
 
+test("missing dossier, commits, and risks inputs report useful errors without stacks", async () => {
+  const cwd = await mkdtemp(join(tmpdir(), "skill-release-cli-missing-"));
+  for (const [option, file] of [["--dossier", "missing-dossier.md"], ["--commits", "missing-commits.txt"], ["--risks", "missing-risks.md"]]) {
+    const args = ["--dossier", dossier];
+    if (option !== "--dossier") args.push(option, join(cwd, file));
+    else args.splice(1, 1, join(cwd, file));
+    const result = run(args, cwd);
+    assert.notEqual(result.status, 0, option);
+    assert.match(result.stderr, /ENOENT/);
+    assert.doesNotMatch(result.stderr, /\\n\\s+at\\s/);
+  }
+});
+
 test("valid JSON output is written to stdout", () => {
   const result = run(["--dossier", dossier, "--commits", commits, "--json"]);
   assert.equal(result.status, 0, result.stderr);
