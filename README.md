@@ -90,12 +90,13 @@ services.
 ## Validation
 
 ```bash
-npm test
-npm run check
-npm run smoke
-npm run test:package
-bash scripts/validate.sh
+npm run release:check
 ```
+
+`npm run release:check` runs the static check, full test suite, source smoke
+test, and clean-consumer package smoke in sequence. It is the single
+deterministic pre-release validation command; it does not publish anything.
+The individual commands remain available when diagnosing a failure.
 
 `npm run test:package` packs the module, installs the tarball in a disposable
 consumer project, runs the installed package's smoke command, and invokes its
