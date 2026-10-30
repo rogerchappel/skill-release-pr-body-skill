@@ -244,3 +244,16 @@ test("groups commits by release body sections", () => {
   assert.deepEqual(groups.Documentation, ["Document skill"]);
   assert.deepEqual(groups.Implementation, ["Implement parser"]);
 });
+
+test("empty dossier input fails with the documented CLI error", async () => {
+  const { buildPrBody } = await import("../src/build.js");
+  await assert.rejects(buildPrBody({ dossier: "" }), {
+    message: "--dossier is required and must not be empty."
+  });
+});
+
+test("malformed commit lines are preserved as commit messages without throwing", () => {
+  assert.deepEqual(parseCommits("not-a-hash\n123456 short\n\n---"), [
+    "not-a-hash", "123456 short", "---"
+  ]);
+});
