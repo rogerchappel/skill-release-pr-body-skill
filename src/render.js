@@ -8,7 +8,7 @@ export function renderPrBody(model) {
     "",
     "## Commit Groups",
     "",
-    ...renderCommitGroups(model.commitGroups),
+    ...renderCommitGroups(model.commitGroups, model.commitGroupLabels),
     "",
     "## Verification",
     "",
@@ -37,10 +37,10 @@ export function renderPrBody(model) {
   return `${lines.join("\n")}\n`;
 }
 
-function renderCommitGroups(groups) {
+function renderCommitGroups(groups, labels = {}) {
   const entries = Object.entries(groups);
   if (!entries.length) return ["- No commit log was supplied."];
-  return entries.flatMap(([name, commits]) => [`- ${name}:`, ...commits.map((commit) => `  - ${commit}`)]);
+  return entries.flatMap(([name, commits]) => [`- ${labels[name] ?? name}:`, ...commits.map((commit) => `  - ${commit}`)]);
 }
 
 function renderList(items, fallback) {

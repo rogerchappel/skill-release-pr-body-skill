@@ -53,3 +53,11 @@ test("renders risks together with dossier warnings in input order", () => {
   assert.ok(output.indexOf("- First warning") < output.indexOf("- Second warning"));
   assert.ok(output.indexOf("- Second warning") < output.indexOf("- Third risk"));
 });
+
+
+test("renders configured commit-group labels while preserving defaults", () => {
+  const output = renderPrBody(model({ commitGroupLabels: { Tests: "Quality checks" } }));
+
+  assert.match(output, /- Quality checks:\n  - Add renderer coverage/);
+  assert.match(output, /- Implementation:\n  - Fix output/);
+});
