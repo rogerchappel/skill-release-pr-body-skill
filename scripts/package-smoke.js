@@ -18,6 +18,10 @@ try {
   const [manifest] = JSON.parse(pack.stdout);
   const paths = new Set(manifest.files.map(({ path }) => path));
 
+  for (const includedTest of ["test/build.test.js", "test/cli.test.js", "test/read-inputs.test.js"]) {
+    assert(!paths.has(includedTest), `Packed artifact unexpectedly includes ${includedTest}`);
+  }
+
   for (const required of [
     "bin/skill-release-pr-body.js",
     "fixtures/commits.txt",
