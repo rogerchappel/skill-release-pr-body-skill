@@ -29,6 +29,8 @@
     "src",
     "docs",
     "fixtures",
+    "scripts/check.js",
+    "scripts/package-smoke.js",
     "SKILL.md",
     "README.md"
   ]
