@@ -37,8 +37,12 @@ try {
   for (const required of ["src/build.js", "src/read-inputs.js", "src/render.js", "docs/PRD.md"]) {
     assert(paths.has(required), `Packed artifact is missing runtime/documentation input ${required}`);
   }
-  for (const excluded of ["test/build.test.js", "test/cli.test.js", "test/read-inputs.test.js", "test/render.test.js", "scripts/package-smoke.js", "scripts/check.js", ".github/workflows/ci.yml", "package-lock.json"]) {
+  for (const excluded of ["test/build.test.js", "test/cli.test.js", "test/read-inputs.test.js", "test/render.test.js", ".github/workflows/ci.yml", "package-lock.json"]) {
     assert(!paths.has(excluded), `Packed artifact unexpectedly includes development-only file ${excluded}`);
+  }
+
+  for (const supportedScript of ["scripts/check.js", "scripts/package-smoke.js"]) {
+    assert(paths.has(supportedScript), `Packed artifact is missing supported verification script ${supportedScript}`);
   }
 
   const consumer = join(workspace, "consumer");
