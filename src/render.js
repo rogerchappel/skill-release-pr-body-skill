@@ -2,8 +2,8 @@ export function renderPrBody(model) {
   const lines = [
     "## Summary",
     "",
-    `- Release readiness classification: ${model.dossier.classification}.`,
-    `- Readiness score: ${model.dossier.score}.`,
+    `- Release readiness classification: ${escapeMarkdown(model.dossier.classification)}.`,
+    `- Readiness score: ${escapeMarkdown(model.dossier.score)}.`,
     "- Generated from local evidence; maintainer review is still required.",
     "",
     "## Commit Groups",
@@ -40,9 +40,13 @@ export function renderPrBody(model) {
 function renderCommitGroups(groups, labels = {}) {
   const entries = Object.entries(groups);
   if (!entries.length) return ["- No commit log was supplied."];
-  return entries.flatMap(([name, commits]) => [`- ${labels[name] ?? name}:`, ...commits.map((commit) => `  - ${commit}`)]);
+  return entries.flatMap(([name, commits]) => [`- ${escapeMarkdown(labels[name] ?? name)}:`, ...commits.map((commit) => `  - ${escapeMarkdown(commit)}`)]);
 }
 
 function renderList(items, fallback) {
-  return items.length ? items.map((item) => `- ${item}`) : [`- ${fallback}`];
+  return items.length ? items.map((item) => `- ${escapeMarkdown(item)}`) : [`- ${fallback}`];
+}
+
+function escapeMarkdown(value) {
+  return String(value).replace(/([\\`*_{}\[\]<>|])/g, "\\$1").replace(/\r?\n/g, " ");
 }

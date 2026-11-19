@@ -61,3 +61,25 @@ test("renders configured commit-group labels while preserving defaults", () => {
   assert.match(output, /- Quality checks:\n  - Add renderer coverage/);
   assert.match(output, /- Implementation:\n  - Fix output/);
 });
+
+test("escapes untrusted Markdown without changing generated section structure", () => {
+  const output = renderPrBody(model({
+    dossier: {
+      classification: "ship\n## Injected",
+      score: "84/100 *bold*",
+      verification: ["PASS: npm test\n## Injected"],
+      docs: ["[link](https://example.invalid)"],
+      warnings: ["<details>open" ]
+    },
+    commitGroups: { "Tests\n## Injected": ["- fake list item"] },
+    commitGroupLabels: { "Tests\n## Injected": "Tests\n## Injected" },
+    risks: ["`code` | table"]
+  }));
+
+  assert.equal((output.match(/^## (Summary|Commit Groups|Verification|Documentation|Safety|Known Limits And Risks|Reviewer Checklist)$/gm) ?? []).length, 7);
+  assert.match(output, /classification: ship ## Injected/);
+  assert.match(output, /PASS: npm test ## Injected/);
+  assert.match(output, /\\\[link\\\]/);
+  assert.match(output, /\\`code\\` \\| table/);
+  assert.match(output, /  - - fake list item/);
+});
