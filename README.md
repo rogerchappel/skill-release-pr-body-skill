@@ -44,9 +44,16 @@ establish npm registry availability.
 skill-release-pr-body --dossier <file> [--commits <file>] [--risks <file>] [--out <file>] [--json]
 ```
 
-`--dossier` is required. Each file option must be followed by a path; missing
-values, flag-like values, and unknown arguments print a usage diagnostic and
-exit nonzero. `--help` and `-h` print usage and exit successfully.
+`--dossier` is required and currently accepts a path to a Markdown dossier;
+there is no direct JSON dossier input option yet. A JSON file is not an
+alternative to the documented Markdown file input. Direct JSON dossier input
+is tracked as future work in `docs/TASKS.md` and should be documented here
+once implemented, including its option syntax, accepted schema, and validation
+behavior.
+
+Each file option must be followed by a path; missing values, flag-like values,
+and unknown arguments print a usage diagnostic and exit nonzero. `--help` and
+`-h` print usage and exit successfully.
 
 ## Output Sections
 
