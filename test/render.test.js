@@ -44,6 +44,19 @@ test("renders explicit fallbacks when commit groups and dossier lists are empty"
   assert.match(output, /- No unresolved risks were supplied\./);
 });
 
+test("uses deterministic fallbacks for malformed optional collections", () => {
+  const output = renderPrBody(model({
+    dossier: { ...model().dossier, verification: null, docs: "not a list", warnings: null },
+    commitGroups: null,
+    risks: null
+  }));
+
+  assert.match(output, /- No commit log was supplied\./);
+  assert.match(output, /- No verification evidence was supplied\./);
+  assert.match(output, /- No documentation checklist was supplied\./);
+  assert.match(output, /- No unresolved risks were supplied\./);
+});
+
 test("renders risks together with dossier warnings in input order", () => {
   const output = renderPrBody(model({
     dossier: { ...model().dossier, warnings: ["First warning", "Second warning"] },

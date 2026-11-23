@@ -25,7 +25,10 @@ export function renderPrBody(model) {
     "",
     "## Known Limits And Risks",
     "",
-    ...renderList([...model.dossier.warnings, ...model.risks], "No unresolved risks were supplied."),
+    ...renderList([
+      ...(Array.isArray(model.dossier.warnings) ? model.dossier.warnings : []),
+      ...(Array.isArray(model.risks) ? model.risks : [])
+    ], "No unresolved risks were supplied."),
     "",
     "## Reviewer Checklist",
     "",
@@ -38,13 +41,17 @@ export function renderPrBody(model) {
 }
 
 function renderCommitGroups(groups, labels = {}) {
-  const entries = Object.entries(groups);
+  const entries = groups && typeof groups === "object" && !Array.isArray(groups)
+    ? Object.entries(groups)
+    : [];
   if (!entries.length) return ["- No commit log was supplied."];
   return entries.flatMap(([name, commits]) => [`- ${escapeMarkdown(labels[name] ?? name)}:`, ...commits.map((commit) => `  - ${escapeMarkdown(commit)}`)]);
 }
 
 function renderList(items, fallback) {
-  return items.length ? items.map((item) => `- ${escapeMarkdown(item)}`) : [`- ${fallback}`];
+  return Array.isArray(items) && items.length
+    ? items.map((item) => `- ${escapeMarkdown(item)}`)
+    : [`- ${fallback}`];
 }
 
 function escapeMarkdown(value) {
