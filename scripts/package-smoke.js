@@ -55,12 +55,24 @@ try {
   assert.equal(JSON.parse(smoke.stdout.slice(smoke.stdout.indexOf("{"))).model.dossier.classification, "ship");
 
   const output = join(workspace, "pr-body.json");
+  const executable = join(consumer, "node_modules", ".bin", "skill-release-pr-body");
+  const args = ["--dossier", join(installed, "fixtures", "dossier.md"), "--json", "--out", output];
+  run(executable, args, consumer);
+  assert.equal(JSON.parse(await readFile(output, "utf8")).model.dossier.classification, "ship");
+
+  const fixtureOutput = join(workspace, "fixture-pr-body.json");
   run(
-    join(consumer, "node_modules", ".bin", "skill-release-pr-body"),
-    ["--dossier", join(installed, "fixtures", "dossier.md"), "--json", "--out", output],
+    executable,
+    [
+      "--dossier", join(installed, "fixtures", "dossier.md"),
+      "--commits", join(installed, "fixtures", "commits.txt"),
+      "--json", "--out", fixtureOutput,
+    ],
     consumer,
   );
-  assert.equal(JSON.parse(await readFile(output, "utf8")).model.dossier.classification, "ship");
+  const result = JSON.parse(await readFile(fixtureOutput, "utf8"));
+  assert.equal(result.model.dossier.classification, "ship");
+  assert.ok(result.markdown.includes("Scaffold PR body CLI"));
 
   console.log("package smoke ok");
 } finally {
